@@ -3,6 +3,7 @@ from imu import MPU6050
 from time import sleep
 import network
 import urequests
+import requests
 import json
 
 # Shows Pi is on by turning on LED when plugged in
@@ -27,7 +28,7 @@ wifi = network.WLAN(network.STA_IF)
 wifi.active(True)
 
 # Define the SSID and password of the network
-ssid = "Guntas"
+ssid = "test"
 password = "qwertyuiop"
 
 # Set the Wi-Fi mode to station (client)
@@ -54,14 +55,13 @@ def attemptConnection (ssid, password):
                 wifi.connect(ssid, password)
                 print("Trying to reconnect...")
                 reconnect_attempts += 1
-                sleep(15)
+                sleep(30)
             if checkConnection():
                 print("Reconnected to Wi-Fi")
                 print("IP Address:", wifi.ifconfig()[0])
         except Exception as e:
             print("Failed to reconnect:", e)
             sleep(2)
-            continue
 
 while True:
     try:
@@ -100,12 +100,9 @@ while True:
 
             # Send final_result over Wi-Fi
             try:
-                final_result_url = 'https://spotr-22162-default-rtdb.firebaseio.com/final_result.json'
-                headers = {'Content-Type': 'application/json'}
-                data = json.dumps({"final_result": final_result})
-                response = urequests.put(final_result_url, data=data, headers=headers)
-                print(response.text)
-                response.close()
+                final_result_url = 'https://api.spaceona.com/update/lafayette.edu/watsonhall/washer/0/'+(str(final_result)).lower()+'/NpLvwbWzkgrpq2UZem9TbfN4s6gcBTiNuaoqA3Ap9S9csrEp'
+                final_result_post = requests.post(final_result_url)
+                print(final_result_post)
             except Exception as e:
                 if not checkConnection():
                     attemptConnection(ssid, password)
